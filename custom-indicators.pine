@@ -1,8 +1,8 @@
 // Ross Cameron Momentum Trading Indicator Suite
 // Based on Warrior Trading Strategy
-// Version 1.0
+// Version 2.0 - Updated to Pine Script v6
 
-//@version=5
+//@version=6
 indicator("Ross Cameron Momentum Suite", overlay=true, max_labels_count=50)
 
 // ============================================================================
@@ -166,34 +166,6 @@ alertcondition(strong_bullish, title="Strong Bullish Setup", message="Ross Camer
 alertcondition(volume_spike, title="Volume Spike", message="Volume Spike: {{ticker}} - Relative volume >= 2x")
 alertcondition(daily_change >= 3, title="3% Gainer", message="3% Gainer: {{ticker}} - Up {{close}}%")
 
-
-// ============================================================================
-// SEPARATE INDICATOR: MOMENTUM SCORECARD
-// ============================================================================
-
-//@version=5
-indicator("Momentum Scorecard", overlay=false)
-
-// Calculate momentum score (0-10)
-score = 0
-score := score + (close > ta.ema(close, 9) ? 1 : 0)
-score := score + (close > ta.ema(close, 20) ? 1 : 0)
-score := score + (close > ta.vwap(close) ? 1 : 0)
-score := score + (ta.ema(close, 9) > ta.ema(close, 20) ? 1 : 0)
-score := score + (ta.rsi(close, 14) > 50 ? 1 : 0)
-score := score + (ta.macd(close, 12, 26, 9)[0] > ta.macd(close, 12, 26, 9)[1] ? 1 : 0)
-score := score + (volume / ta.sma(volume, 30) >= 2.0 ? 2 : 0)  // Double weight for volume
-score := score + (((close - close[1]) / close[1]) * 100 >= 3 ? 2 : 0)  // Double weight for daily gain
-
-// Plot score
-plot(score, "Momentum Score", color=score >= 8 ? color.green : score >= 5 ? color.yellow : color.red, linewidth=2)
-hline(8, "Strong Threshold", color=color.green, linestyle=hline.style_dashed)
-hline(5, "Neutral", color=color.yellow, linestyle=hline.style_dashed)
-
-// Background colors
-bgcolor(score >= 8 ? color.new(color.green, 80) : score <= 3 ? color.new(color.red, 80) : na)
-
-
 // ============================================================================
 // INSTALLATION INSTRUCTIONS
 // ============================================================================
@@ -202,23 +174,31 @@ bgcolor(score >= 8 ? color.new(color.green, 80) : score <= 3 ? color.new(color.r
 //
 // 1. Copy this entire script
 // 2. Go to TradingView.com
-// 3. Click "Pine Editor" at bottom of chart
-// 4. Click "New" → "Blank Indicator"
-// 5. Delete all default code
-// 6. Paste this script
-// 7. Click "Save" and name it "Ross Cameron Momentum Suite"
-// 8. Click "Add to Chart"
+// 3. Open any stock chart
+// 4. Click "Pine Editor" at bottom of chart
+// 5. Click "New" → "Indicator"
+// 6. Delete all default code
+// 7. Paste this script
+// 8. Click "Save" and name it "Ross Cameron Momentum Suite"
+// 9. Click "Add to Chart"
 //
 // The indicator provides:
-// - EMA 9, 20, 50, 200 overlays
-// - VWAP overlay
-// - Entry signal markers
-// - Info table with key metrics
-// - Background highlighting for strong setups
-// - Customizable alerts
+// ✅ EMA 9, 20, 50, 200 overlays (Blue, Red, Orange, Purple)
+// ✅ VWAP overlay (Yellow)
+// ✅ Entry signal markers (Green triangles)
+// ✅ Real-time info table with all key metrics
+// ✅ Background highlighting for strong bullish setups
+// ✅ Customizable alerts for entry signals
 //
-// For the Momentum Scorecard:
-// - Copy the second indicator section (starts with //@version=5 indicator("Momentum Scorecard"))
-// - Create a new blank indicator
-// - Paste and save
-// - Add as a separate indicator below your main chart
+// Color Legend:
+// - Blue: 9 EMA (fast moving average)
+// - Red: 20 EMA (medium moving average)
+// - Orange: 50 SMA (support/resistance)
+// - Purple: 200 SMA (long-term trend)
+// - Yellow: VWAP (volume-weighted average price)
+// - Green Triangle: Entry signal detected
+// - Green Background: All bullish conditions met
+//
+// For the separate Momentum Scorecard indicator:
+// - See the file: momentum-scorecard.pine
+// - Install it as a second indicator below your chart
